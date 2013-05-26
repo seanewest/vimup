@@ -2,14 +2,14 @@
 require 'fileutils'
 
 cmd = ARGV.first
-if ARGV.length == 2
-  address = ARGV[1]
+address = cmd
+address = ARGV[1] if ARGV.length == 2
+
   if address !~ /https:\/\/github\.com/
     address = "https://github.com/#{address}.git" 
   end
   repo = address.split('/').last
   repo.slice! ".git"
-end
 
 case cmd
 when "list"
