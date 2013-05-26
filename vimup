@@ -22,11 +22,11 @@ when "user"
   `git submodule update`
   `ln -s ~/.vim/.vimrc ~/.vimrc`
   `ln -s ~/.vim/.gvimrc ~/.gvimrc`
-when "up"
-  Dir.chdir(File.join(ENV["HOME"], ".vim", "bundle"))
-  FileUtils.rm_rf repo
-  `git clone #{address}`
 when "down"
   Dir.chdir(File.join(ENV["HOME"], ".vim", "bundle"))
   FileUtils.rm_rf repo
+else
+  Dir.chdir(File.join(ENV["HOME"], ".vim", "bundle"))
+  FileUtils.rm_rf repo
+  `git clone #{address}`
 end
