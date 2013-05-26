@@ -7,7 +7,7 @@
 #### Remove a plugin
     vimup down vim-rails
 
-#### Add a user's vim directory
+#### Install a user's vim configuration
     vimup user sgottfried/vim_config
 
 #### List currently installed vim plugins
