@@ -1,0 +1,75 @@
+#!/usr/bin/env ruby
+require 'fileutils'
+require 'find'
+
+def git(method, *args)
+  `git #{method} #{args.join(' ')}`
+end
+
+cmd = ARGV.first
+
+address = cmd
+address = ARGV[1] if ARGV.length == 2
+if address !~ /https:\/\/github\.com/
+  address = "https://github.com/#{address}.git" 
+end
+
+repo = address.split('/').last
+repo.slice! ".git"
+
+def findrc(dir, rcname)
+  find_in_dir(dir) do |path, name|
+    name == rcname || name == ".#{rcname}"
+  end
+end
+
+def find_vim_dir(dir)
+  folders = ["autoload", "bundle", "colors"]
+  find_in_dir(dir) do |path, name|
+    has_sub_folders = (Dir.entries(path) & folders).any?
+    has_sub_folders && !path.include?(".git")
+  end
+end
+
+def find_in_dir(dir)
+  Find.find(dir) do |path|
+    name = File.basename(path)
+    return path if yield(path, name)
+  end
+  nil
+end
+
+home = File.join(ENV['HOME'])
+vim_dest = File.join(home, ".vim")
+vimrc_dest = File.join(home, ".vimrc")
+gvimrc_dest = File.join(home, ".gvimrc")
+vimuser = File.join(home, ".vimuser")
+bundle = File.join(vim_dest, "bundle")
+bundle_files = File.join(bundle, "*")
+
+case cmd
+when "list"
+  puts Dir.glob(bundle_files).map {|s| s.split('/').last}
+when "user"
+  FileUtils.rm_rf([vim_dest, vimrc_dest, gvimrc_dest, vimuser])
+  git("clone", address, vimuser)
+
+  vim = find_vim_dir(vimuser)
+  vimrc = findrc(vimuser, 'vimrc')
+  gvimrc = findrc(vimuser, 'gvimrc')
+
+  FileUtils.symlink(vim, vim_dest) if vim && File.exists?(vim)
+  FileUtils.symlink(vimrc, vimrc_dest) if vimrc && File.exists?(vimrc)
+  FileUtils.symlink(gvimrc, gvimrc_dest) if gvimrc && File.exists?(gvimrc)
+
+  Dir.chdir(vimuser)
+  git("submodule", "init")
+  git("submodule", "update")
+when "down"
+  Dir.chdir(bundle)
+  FileUtils.rm_rf(repo)
+else
+  Dir.chdir(bundle)
+  FileUtils.rm_rf(repo)
+  git("clone", address)
+end
