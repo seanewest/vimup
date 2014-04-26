@@ -12,7 +12,7 @@ Then from the command line:
 $ git clone https://github.com/seanewest/vimup
 $ cd vimup
 $ gem build vimup.gemspec
-$ gem install ./vimup-0.0.1.gem
+$ gem install ./vimup*.gem
 ```
 
 Usage
@@ -24,9 +24,8 @@ Usage
 #### Remove a plugin
     vimup down vim-rails
 
-#### Install a user's vim configuration (experimental..)
-    vimup user seanewest/vim_config
-
 #### List currently installed vim plugins
     vimup list
 
+#### Install a user's vim configuration (experimental..)
+    vimup user seanewest/vim_config
